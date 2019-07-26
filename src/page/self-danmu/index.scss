@@ -1,0 +1,124 @@
+#root {
+    padding: 4px;
+    .self-danmu-page {
+        width: 100%;
+        height: 100%;
+        font-size: 14px;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        // 头部
+        .head {
+            width: 100%;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            -webkit-app-region: drag;
+            & > div {
+                text-align: center;
+            }
+            .live-audience {
+                flex: 4;
+            }
+            .new-fans {
+                flex: 6;
+            }
+            &::after {
+                content: "";
+                width: 100%;
+                height: 1px;
+                background: #fff;
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                transform: scaleY(0.5);
+            }
+        }
+        // 主内容
+        .main-content {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+            transform: translateZ(0);
+            .gift-region, .danmu-region {  
+                width: 100%;  
+                display: flex;
+                flex-direction: column;
+                .region-title {
+                    width: 100%;
+                    height: 30px;
+                    font-size: 16px;
+                    padding-left: 20px;
+                    // background: #693;
+                }
+                .ul-wrapper {
+                    width: 100%;
+                    flex: 1;
+                    overflow-y: auto;
+                    display: flex;
+                    align-items: flex-end;
+                    ul {
+                        width: 100%;
+                        min-height: 100%;
+                        li {
+                            list-style: none;
+                            line-height: 1.6;
+                            animation: danmuLiShow 8s linear;
+                            box-sizing: border-box;
+                            padding-left: 10px;
+                            .audience-name {color: rgb(140, 184, 252)};
+                            .red-name {color: red};
+                        }
+                        @keyframes danmuLiShow {
+                            0% {
+                                opacity: 0;
+                                padding-left: 20px;
+                            }
+                            2% {
+                                opacity: 1;
+                                padding-left: 10px;
+                            }
+                            100% {
+                                opacity: 1;
+                                padding-left: 10px;
+                            }
+                        }
+                    }
+                }
+                
+                
+            }
+            .gift-region {
+                min-height: 100px;
+                // background: #639;
+                border-bottom: 1px solid #fff;
+                background: url('../../img/resize-corner-mark.png') right bottom no-repeat;
+                background-size: 24px 24px;
+                ul {
+                    li {
+                        .gift-name {color: rgb(255, 178, 61);}
+                    }
+                }
+            }
+            .danmu-region {
+                flex: 1;
+                min-height: 150px;
+                position: relative;
+                // background: #936;
+                .drag-line {
+                    width: 100%;
+                    height: 8px;
+                    position: absolute;
+                    top: -4px;
+                    left: 0;
+                    cursor: s-resize;
+                }
+            }
+            
+            
+        }
+    }
+}

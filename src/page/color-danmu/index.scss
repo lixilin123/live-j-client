@@ -1,0 +1,17 @@
+#root {
+  .color-danmu-page {
+    width: 100%;
+    height: 100%;
+    background: #369;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  #my-player {
+    -webkit-app-region: drag;
+    width: calc(100% - 4px);
+    height: calc(100% - 4px);
+    background: #369;
+    position: relative;
+  }
+}

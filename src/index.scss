@@ -1,0 +1,14 @@
+@font-face {
+    font-family: 'MyFont';
+    src: local('MyFont'), url('./font/myFont.ttf') format('woff');
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+html, body, #root {
+    width: 100%;
+    height: 100%;
+    font-family: 'MyFont';
+}
