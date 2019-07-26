@@ -17,12 +17,15 @@ class SelfDanmu extends React.Component {
         this.LiveRoom = null;
         this.danmakuCount = 0;
         this.isResizing = false;
+        // 弹幕栈
+        this.danmuStack = [];
     }
 
     componentDidMount() {
         document.title = '直播酱弹幕展示';
         this.initWindow();
         this.addResizeEvent();
+        this.intervalShowDanmu();
     }
 
     initWindow() {
@@ -82,41 +85,24 @@ class SelfDanmu extends React.Component {
         } else {
             type = msg.type
         }
-
-        // // 存储弹幕
-        // if (['gift', 'danmu'].includes(type)) {
-        //     if (!this.state[type]) {
-        //         this.state[type] = [];
-        //     }
-        //     msg.keyCount = `${this.danmakuCount++}`;
-        //     const temp = [... this.state[type], msg];
-        //     // 添加一条
-        //     this.setState({ [type]: temp });
-        //     window[`clearDanmuTimer${msg.keyCount}`] = window.setTimeout(() => {
-        //         this.state[type].shift();
-        //         // 删除一条
-        //         this.setState({ [type]: this.state[type] });
-        //         window.clearTimeout(window[`clearDanmuTimer${msg.keyCount}`])
-        //     }, 8000)
-        // } else {
-        //     this.setState({ [type]: msg })
-        // }
-
-        // 存储弹幕
-        if (!state.danmuPool[type]) {
-            state.danmuPool[type] = [];
-        }
+        // 存储弹幕到栈
         if (['gift', 'danmu'].includes(type)) {
             msg.keyCount = `${this.danmakuCount++}`;
-            state.danmuPool[type].push(msg)
-            window[`clearDanmuTimer${msg.keyCount}`] = window.setTimeout(() => {
-                state.danmuPool[type].shift();
-                // 删除一条
-                window.clearTimeout(window[`clearDanmuTimer${msg.keyCount}`])
-            }, 8000)
+            msg.lltype = type;
+            this.danmuStack.push(msg);
         } else {
             state.danmuPool[type] = msg;
         }
+    }
+
+    // 定时器，有规律的渲染页面，防止高并发导致弹幕显示空白
+    intervalShowDanmu() {
+        window.setInterval(() => {
+            if(this.danmuStack.length) {
+                const danmuItem = this.danmuStack.splice(0,1)[0];
+                state.danmuPool[danmuItem.lltype].push(danmuItem);
+            }
+        }, 200)
     }
 
     // 设置礼物、弹幕区域可调整大小
