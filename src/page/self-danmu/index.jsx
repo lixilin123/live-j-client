@@ -11,8 +11,8 @@ class SelfDanmu extends React.Component {
     constructor() {
         super();
         this.state = {
-            giftRgHeight: '180px',
-            newFans: 0
+            newFans: 0,
+            giftRgHeight: '180px'
         }
         this.LiveRoom = null;
         this.danmakuCount = 0;
@@ -26,6 +26,7 @@ class SelfDanmu extends React.Component {
         this.initWindow();
         this.addResizeEvent();
         this.intervalShowDanmu();
+        this.updateNewFans();
     }
 
     initWindow() {
@@ -43,6 +44,7 @@ class SelfDanmu extends React.Component {
         homeDanmuWindow.webContents.send('self-danmu-mounted');
     }
 
+    // 监听WS
     listenWebSocketMsg() {
         let that = this;
         remote.getGlobal('emitter').on('websocket-message', (msg) => {
@@ -54,7 +56,6 @@ class SelfDanmu extends React.Component {
                 case 'newFans':
                     console.log('有新的粉丝');
                     console.log(msg.data);
-                    that.storageDanmuInfo(msg.data);
                     break;
                 case 'info':
                     console.log('直播间信息');
@@ -65,6 +66,7 @@ class SelfDanmu extends React.Component {
         })
     }
 
+    // 存储弹幕信息
     storageDanmuInfo(msg, callback) {
         // 定义并赋值type
         let type;
@@ -78,10 +80,6 @@ class SelfDanmu extends React.Component {
             if (!this.gztx && msg.type == 'newFans') return;
             if (!this.jrtx && ['welcome', 'welcomeGuard', 'ENTRY_EFFECT'].includes(msg.type)) return;
             if (this.pbxdsdm && msg.comment && msg.comment == '哔哩哔哩 (゜-゜)つロ 干杯~') return;
-            // 更新本次开播新增的粉丝数
-            if (msg.type == 'newFans') {
-                state.danmuPool.newFans++;
-            };
         } else {
             type = msg.type
         }
@@ -93,6 +91,13 @@ class SelfDanmu extends React.Component {
         } else {
             state.danmuPool[type] = msg;
         }
+    }
+
+    // 更新本次直播新增粉丝数
+    updateNewFans() {
+        ipcRenderer.on('newFans', (e, newFans) => {
+            this.setState({newFans})
+        })
     }
 
     // 定时器，有规律的渲染页面，防止高并发导致弹幕显示空白
@@ -128,7 +133,7 @@ class SelfDanmu extends React.Component {
             <div className="self-danmu-page" style={pageStyle}>
                 <div className="head">
                     <div className="live-audience">人气值: {state.danmuPool.online ? state.danmuPool.online.number : 0}</div>
-                    <div className="new-fans">本次新增粉丝数: {state.danmuPool.newFans}</div>
+                    <div className="new-fans">本次新增粉丝数: {this.state.newFans}</div>
                 </div>
                 <div className="main-content">
                     <div className="gift-region" style={{ height: this.state.giftRgHeight }}>

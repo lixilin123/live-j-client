@@ -79,6 +79,7 @@ export default class Home extends React.Component {
             negative: [],
             totalObj: {}
         };
+        this.newFans = 0;
     }
 
     componentDidMount() {
@@ -196,8 +197,7 @@ export default class Home extends React.Component {
     listenWebSocketMsg() {
         let that = this;
         remote.getGlobal('emitter').on('websocket-message', msg => {
-            if (!that.jcStart) return;
-            if (msg.type == 'danmaku.message' && msg.data.type == 'comment') {
+            if (that.jcStart && msg.type == 'danmaku.message' && msg.data.type == 'comment') {
                 const uid = msg.data.user.id,
                     name = msg.data.user.name;
                 // 如果此人已经参与了竞猜，不对比弹幕信息，直接返回
@@ -215,6 +215,29 @@ export default class Home extends React.Component {
                     that.jcItem.totalObj[uid] = name;
                     that.jcItem.negative.push({ uid, name })
                     return;
+                }
+                // if (msg.data.comment.includes(that.state.matchPositive)) {
+                //     console.log('有人选择了正方');
+                //     console.log(msg.data);
+                //     that.jcItem.totalObj[uid] = name;
+                //     that.jcItem.positive.push({ uid, name })
+                //     return;
+                // }
+                // if (msg.data.comment.includes(that.state.matchNegative)) {
+                //     console.log('有人选择了反方')
+                //     console.log(msg.data)
+                //     that.jcItem.totalObj[uid] = name;
+                //     that.jcItem.negative.push({ uid, name })
+                //     return;
+                // }
+            }
+            if (msg.type == 'newFans') {
+                this.newFans++;
+                const selfDanmuWindowId = ipcRenderer.sendSync('getWindow', { windowName: 'selfDanmu' })
+                if(selfDanmuWindowId) {
+                    const selfDanmuWindow = remote.BrowserWindow.fromId(selfDanmuWindowId);
+                    console.log(this.newFans)
+                    selfDanmuWindow.webContents.send('newFans', this.newFans)
                 }
             }
         })
